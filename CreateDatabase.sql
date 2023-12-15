@@ -88,9 +88,17 @@ create table ReaderBook(
 	ReaderId int references Readers(Id) not null,
 	BookId int references Books(Id) not null,
 	BorrowDate TimeStamp,
-	BookReturned bool,
+	BookReturned bool default(False),
 	Primary key (ReaderId, BookId)
 )	
+
+/*Procedura za posudbu knjiga*/
+
+select * from Books
+select * from Readers
+
+insert into ReaderBook (ReaderId, BookId, BorrowDate) values
+(ReaderId,BookId, Now())
 	
 	
 	
