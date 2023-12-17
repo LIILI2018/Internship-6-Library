@@ -17,12 +17,15 @@ select b.Name, b.PublicationDate,
 		  where( ab.AuthorId = a.Id and ab.BookId = b.Id)) >= 1)
 from books b 
 /*2*/
-/*
-select b.Name, rb.*
-from ReaderBook rb
-join Books b on rb.BookId = b.Id
---when rb.BorrowDate between timestamp '2023/12/1' and timestamp '2024/1/1'
-/**/*/
+
+select distinct b.Id, b.Name, rb.* from books b
+left join(
+	select * from ReaderBook rb
+	where rb.BorrowDate between timestamp '2023/12/1' and timestamp '2024/1/1' 
+) rb on rb.BookId = b.id 
+order by b.Id
+
+/*3*/
 
 select l.Name, (select count(*) from Books b where b.LibraryId = l.Id)
 from libraries l
@@ -48,47 +51,39 @@ where 0 < (select Count(*) from AuthorBook ab
 		   where a.Id = ab.AuthorId and ab.PublicationDate between timestamp '2019/1/1' and timestamp '2022/1/1')
 
 /*7*/
-/*31
-select Distinct(c.Name)
-(select Count )
-/*(select count(*) from Authors where a.Id in (
-	select Distinct(AuthorId) from AuthorBook where BookId in(
-	select b.Id from Books b where Genre like 'Artistic'
-	)))*/
+
+select c.Name, Count(*)
 from countries c 
 join authors a on a.Country = c.Id 
-join AuthorBook ab on ab.AuthorId = a.Id
-join Books b on ab.BookId = b.Id*/
+join authorBook ab on ab.AuthorId = a.Id
+join (select * from Books where genre like 'Artistic') b on ab.BookId = b.Id
+group by c.Name
 
-/**/
-/*
-select * from books
-select * from authors
-select * from AuthorBook
-
-select *
+/*8*/
+select distinct on (a.Id, b.Genre) a.Name, b.Genre, Count(*)
 from Authors a
 join AuthorBook ab on ab.AuthorId = a.Id
 join Books b on b.Id = ab.BookId
-where Author.N
-*/
-/**/
+group by a.Id, b.Genre	
+/*9*/
 /*
 select r.Name,
 case 
  	when (select Count(*) from ReaderBook rb
 				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId
-		   ) > 0 then 
-		   (select Now() - (rb.BorrowDate + interval '20 days') from ReaderBook rb
-				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId
-		   )
+		    ) > 0 then 
+		    sum(
+				
+			   /*(select Now() - (rb.BorrowDate + interval '20 days') from ReaderBook rb
+				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId)*/
+		    )
 	else interval '20 days'/*'ČISTO'*/ end
 from Readers r
 
 select * from ReaderBook
 select now() - BorrowDate > interval '20 days', BorrowDate ,readerid from ReaderBook
 order by BorrowDate
-*/
+/**/*/
 
 
 select a.Name, a.Id,
@@ -108,4 +103,23 @@ select c.Name,
 )
 from Countries c
 /*12*/
+
+select b.Name , Count(*) 
+from books b
+join (select * from ReaderBook where BookReturned = false) rb on b.Id = rb.BookId
+where (select Count(*) from books b
+		join (select * from ReaderBook where BookReturned = false) rb on b.Id = rb.BookId)  >= 10
+group by b.Name
+
+/*13*/
+select c.Name, Count(*) 
+from countries c
+join authors a on a.Country = c.Id
+join AuthorBook ab on ab.AuthorId = a.Id
+join books b on ab.BookId = b.Id
+join ReaderBook rb on rb.BookId = b.Id
+group by c.Name
+
+/**/
+
 

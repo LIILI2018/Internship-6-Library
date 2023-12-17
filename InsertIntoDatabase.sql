@@ -32,7 +32,10 @@ insert into Books (Id, Name, Genre, LibraryId) values
 (9,'Junaci Pavlove ulice','Reading',1),
 (10,'All tomorrows','Artistic',4),
 (11,'All tomorrows','Artistic',4),
-(12,'All tomorrows','Artistic',4)
+(12,'All tomorrows','Artistic',4),
+(13,'Osman','Reading',1),
+(14,'Faust','Artistic',2)
+
 
 
 select * from authorBook
@@ -46,7 +49,9 @@ insert into AuthorBook (AuthorId,BookId,Authortype, PublicationDate) values
 (4,10, 'Primary',timestamp '2000/2/11'),
 (4,11, 'Primary',timestamp '2000/2/11'),
 (4,12, 'Primary',timestamp '2000/2/11'),
-(3,9,'Primary',timestamp '1991/2/11')
+(3,9,'Primary',timestamp '1991/2/11'),
+(2,14, 'Primary',timestamp '1800/8/14')
+
 
 delete from AuthorBook *
 
@@ -56,6 +61,7 @@ insert into readers (Id, Name, Surename, BirthDate, Gender) values
 (3,'Charlotte','Mary',timestamp '1981/1/1','F'),
 (4,'Bob','Holmes',timestamp '2001/1/1','O')
 
+select * from readerBook
 insert into ReaderBook (ReaderId, BookId, BorrowDate, BookReturned) values
 (1,1,timestamp '2023/12/1',True),
 (1,2,timestamp '2020/12/2',False),
