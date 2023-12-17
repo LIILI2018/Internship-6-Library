@@ -11,11 +11,12 @@ from Authors a
 join Countries c on a.Country = c.Id
 /*1*/
 
-select b.Name, b.PublicationDate,
+select b.Name, ab.PublicationDate,
 (select STRING_AGG( a.Name || ' ' || substring(a.Surename from 0 for 2) || '.' , ' ; ') from authors a
 	where(select count(*) from AuthorBook ab
 		  where( ab.AuthorId = a.Id and ab.BookId = b.Id)) >= 1)
 from books b 
+join authorBook ab on b.Id = ab.BOOKId
 /*2*/
 
 select distinct b.Id, b.Name, rb.* from books b
@@ -66,24 +67,17 @@ join AuthorBook ab on ab.AuthorId = a.Id
 join Books b on b.Id = ab.BookId
 group by a.Id, b.Genre	
 /*9*/
-/*
+
 select r.Name,
 case 
  	when (select Count(*) from ReaderBook rb
 				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId
-		    ) > 0 then 
-		    sum(
-				
-			   /*(select Now() - (rb.BorrowDate + interval '20 days') from ReaderBook rb
-				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId)*/
-		    )
-	else interval '20 days'/*'ČISTO'*/ end
+		    ) > 0 then		
+			    Cast((select Now() - (rb.BorrowDate + interval '20 days') from ReaderBook rb
+				where Now() - rb.BorrowDate > interval '20 days' and rb.BookReturned = false and r.Id = rb.ReaderId) as varchar)   
+	else 'ČISTO' end
 from Readers r
-
-select * from ReaderBook
-select now() - BorrowDate > interval '20 days', BorrowDate ,readerid from ReaderBook
-order by BorrowDate
-/**/*/
+/**/
 
 
 select a.Name, a.Id,
@@ -112,7 +106,7 @@ where (select Count(*) from books b
 group by b.Name
 
 /*13*/
-select c.Name, Count(*) 
+select c.Name, Count(*) / Count(b)
 from countries c
 join authors a on a.Country = c.Id
 join AuthorBook ab on ab.AuthorId = a.Id
@@ -121,5 +115,41 @@ join ReaderBook rb on rb.BookId = b.Id
 group by c.Name
 
 /**/
+select * from authors a where  5 < (select Count(*) from AuthorBook ab where ab.AuthorId = a.Id)
+
+select Date_Trunc('Decade', a.BirthDate), count(*)
+from authors a where  0 < (select Count(*) from AuthorBook ab where ab.AuthorId = a.Id)
+group by Date_Trunc('Decade', a.BirthDate)
+
+select a.gender,Count(*) from authors a where  5 < (select Count(*) from AuthorBook ab where ab.AuthorId = a.Id)
+Group by a.gender
+/**/
+
+select distinct on (a.Id) a.name, sqrt(Count(b)) / Count(distinct(abo.AuthorId)) from authors a
+join authorBook ab on ab.AuthorId = a.Id
+join Books b on ab.BookId = b.Id
+join AuthorBook abo on abo.BookId = b.Id
+group by a.Id
+limit 10
+/*16*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,4 +1,4 @@
- 	create table Libraries(
+ create table Libraries(
 	Id serial primary key not null,
 	Name varchar(40) not null,
 	OpenTime time not null,
