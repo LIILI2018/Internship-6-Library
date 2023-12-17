@@ -1,7 +1,8 @@
-create table Libraries(
+ 	create table Libraries(
 	Id serial primary key not null,
 	Name varchar(40) not null,
-	WorkingHours time not null
+	OpenTime time not null,
+	CloseTime time not null
 )
 alter table Libraries
 	add constraint NameISEmpty check(Name != '')
@@ -12,7 +13,6 @@ create table Books(
 	Id serial primary key not null,
 	Name varchar(55) not null,
 	Genre varchar(12) not null,
-	PublicationDate Timestamp,
 	LibraryId int references Libraries(Id)
 )
 alter table Books
@@ -26,7 +26,8 @@ create table Authors(
 	Surename varchar(20),
 	Gender varchar(1),
 	BirthDate Timestamp,
-	Country int references Countries(Id)
+	Country int references Countries(Id),
+	Alive bool default(True)
 )
 alter table Authors
 	add constraint NameISEmpty check(Name != '')
@@ -81,9 +82,13 @@ alter table Countries
 create table AuthorBook(
 	AuthorId int references Authors(Id) not null,
 	BookId int references Books(Id) not null,
+	AuthorType varchar(10),
+	PublicationDate Timestamp,
 	Primary key (AuthorId, BookId)
 )
-	
+alter table AuthorBook
+	add constraint AuthorType check (AuthorType in ('Primary', 'Secondary'))
+
 create table ReaderBook(
 	ReaderId int references Readers(Id) not null,
 	BookId int references Books(Id) not null,
@@ -99,10 +104,7 @@ select * from Readers
 
 insert into ReaderBook (ReaderId, BookId, BorrowDate) values
 (ReaderId,BookId, Now())
-	
-	
-	
-	
+
 	
 	
 	
